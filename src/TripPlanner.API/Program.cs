@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using TripPlanner.Application.Trips.Commands;
 using TripPlanner.Infrastructure.Persistence;
+using TripPlanner.Application.Common.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,12 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<TripPlannerDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITripPlannerDbContext>(provider =>
+    provider.GetRequiredService<TripPlannerDbContext>());
+    
+builder.Services.AddMediatR(cfg =>
+cfg.RegisterServicesFromAssembly(typeof(CreateTripCommandHandler).Assembly));
 
 var app = builder.Build();
 

@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using TripPlanner.Application.Common.Interfaces;
 using TripPlanner.Domain.Entities;
 
 namespace TripPlanner.Infrastructure.Persistence;
 
-public class TripPlannerDbContext : DbContext
+public class TripPlannerDbContext : DbContext, ITripPlannerDbContext
 {
     public TripPlannerDbContext(DbContextOptions<TripPlannerDbContext> options)
         : base(options)
