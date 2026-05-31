@@ -1,8 +1,11 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using TripPlanner.Application.Trips.Commands;
-using TripPlanner.Infrastructure.Persistence;
+using TripPlanner.Application.Common.Behaviours;
 using TripPlanner.Application.Common.Interfaces;
+using TripPlanner.Application.Trips.Commands;
+using TripPlanner.API;
+using TripPlanner.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +17,17 @@ builder.Services.AddDbContext<TripPlannerDbContext>(options =>
 
 builder.Services.AddScoped<ITripPlannerDbContext>(provider =>
     provider.GetRequiredService<TripPlannerDbContext>());
-    
+
 builder.Services.AddMediatR(cfg =>
-cfg.RegisterServicesFromAssembly(typeof(CreateTripCommandHandler).Assembly));
+{
+    cfg.RegisterServicesFromAssembly(typeof(CreateTripCommandHandler).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+});
+
+builder.Services.AddValidatorsFromAssembly(typeof(CreateTripCommandValidator).Assembly);
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -26,6 +37,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
