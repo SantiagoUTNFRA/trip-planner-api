@@ -32,4 +32,11 @@ public class TripsController : ControllerBase
 
         return Ok(trip);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllTrips()
+    {
+        var trips = await _mediator.Send(new GetAllTripsQuery());
+        return Ok(trips);
+    }
 }

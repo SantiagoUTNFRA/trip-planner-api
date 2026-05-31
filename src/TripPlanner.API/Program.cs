@@ -7,6 +7,8 @@ using TripPlanner.Application.Trips.Commands;
 using TripPlanner.API;
 using TripPlanner.Infrastructure.Persistence;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -29,6 +31,16 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateTripCommandValidator).As
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -36,6 +48,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseCors("AllowClient");
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
