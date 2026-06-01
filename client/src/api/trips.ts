@@ -24,6 +24,27 @@ export interface CreateTripRequest {
     baseCurrency: string
 }
 
+export interface Expense {
+    id: string
+    amount: number
+    currency: string
+    amountInBaseCurrency: number
+    category: string
+    notes: string | null
+    date: string
+    tripId: string
+    stayId: string | null
+}
+
+export interface CreateExpenseRequest {
+    amount: number
+    currency: string
+    category: string
+    notes: string | null
+    date: string
+    stayId: string | null
+}
+
 export const tripsApi = {
     getById: async (id: string): Promise<Trip> => {
         const response = await api.get<Trip>(`/trips/${id}`)
@@ -39,4 +60,15 @@ export const tripsApi = {
         const response = await api.get<Trip[]>('/trips')
         return response.data
     },
+
+    getExpenses: async (tripId: string): Promise<Expense[]> => {
+        const response = await api.get<Expense[]>(`/trips/${tripId}/expenses`)
+        return response.data
+    },
+
+    createExpense: async (tripId: string, data: CreateExpenseRequest): Promise<{ id: string }> => {
+        const response = await api.post<{ id: string }>(`/trips/${tripId}/expenses`, data)
+        return response.data
+    },
+
 }
