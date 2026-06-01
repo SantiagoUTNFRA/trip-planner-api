@@ -1,6 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { tripsApi, type Trip } from '../api/trips'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+
+function TripCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-4 w-72 mt-1" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-4 w-32" />
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function TripList() {
   const navigate = useNavigate()
@@ -13,40 +31,58 @@ export default function TripList() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <p style={{ padding: '2rem' }}>Cargando...</p>
-
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '0 1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1>Mis viajes</h1>
-        <button
-          onClick={() => navigate('/trips/create')}
-          style={{ padding: '0.5rem 1rem', background: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}
-        >
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-800">Mis viajes</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            {loading ? '...' : `${trips.length} viajes guardados`}
+          </p>
+        </div>
+        <Button onClick={() => navigate('/trips/create')}>
           + Nuevo viaje
-        </button>
+        </Button>
       </div>
 
-      {trips.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>No tenés viajes todavía. ¡Creá uno!</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {trips.map(trip => (
-            <div
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {loading ? (
+          <>
+            <TripCardSkeleton />
+            <TripCardSkeleton />
+            <TripCardSkeleton />
+          </>
+        ) : trips.length === 0 ? (
+          <div className="col-span-3 text-center py-16 text-slate-400">
+            <p className="text-4xl mb-3">🗺️</p>
+            <p className="text-lg font-medium">No tenés viajes todavía</p>
+            <p className="text-sm mt-1">Creá uno para empezar a planificar</p>
+          </div>
+        ) : (
+          trips.map(trip => (
+            <Card
               key={trip.id}
+              className="cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => navigate(`/trips/${trip.id}`)}
-              style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.25rem', cursor: 'pointer' }}
             >
-              <h2 style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}>{trip.name}</h2>
-              {trip.description && <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.75rem' }}>{trip.description}</p>}
-              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                <span>📅 {new Date(trip.startDate).toLocaleDateString()}</span>
-                <span>💰 {trip.totalBudget.toLocaleString()} {trip.baseCurrency}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              <CardHeader>
+                <CardTitle className="text-base">{trip.name}</CardTitle>
+                {trip.description && (
+                  <p className="text-sm text-slate-500">{trip.description}</p>
+                )}
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <span className="text-sm text-slate-500">
+                  📅 {new Date(trip.startDate).toLocaleDateString()}
+                </span>
+                <Badge variant="secondary">
+                  {trip.totalBudget.toLocaleString()} {trip.baseCurrency}
+                </Badge>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   )
 }
