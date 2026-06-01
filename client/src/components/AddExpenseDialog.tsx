@@ -5,17 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { styles } from '@/lib/styles'
 
-const CATEGORIES = [
-  'Accommodation',
-  'Food',
-  'Transport',
-  'Activities',
-  'Gear',
-  'Health',
-  'Visa',
-  'Other',
-]
+const CATEGORIES = Object.keys(styles.categoryColors)
 
 interface Props {
   tripId: string
@@ -49,14 +41,7 @@ export default function AddExpenseDialog({ tripId, onExpenseAdded }: Props) {
         date: new Date(form.date).toISOString(),
       })
       setOpen(false)
-      setForm({
-        amount: 0,
-        currency: 'NZD',
-        category: 'Food',
-        notes: null,
-        date: new Date().toISOString().split('T')[0],
-        stayId: null,
-      })
+      setForm({ amount: 0, currency: 'NZD', category: 'Food', notes: null, date: new Date().toISOString().split('T')[0], stayId: null })
       onExpenseAdded()
     } catch (error) {
       console.error(error)
@@ -78,38 +63,25 @@ export default function AddExpenseDialog({ tripId, onExpenseAdded }: Props) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Monto</Label>
-              <Input
-                name="amount"
-                type="number"
-                value={form.amount}
-                onChange={handleChange}
-                placeholder="0"
-              />
+              <Input name="amount" type="number" value={form.amount} onChange={handleChange} placeholder="0" />
             </div>
             <div className="space-y-1">
               <Label>Moneda</Label>
-              <Input
-                name="currency"
-                value={form.currency}
-                onChange={handleChange}
-                placeholder="NZD"
-                maxLength={3}
-              />
+              <Input name="currency" value={form.currency} onChange={handleChange} placeholder="NZD" maxLength={3} />
             </div>
           </div>
 
           <div className="space-y-1">
             <Label>Categoría</Label>
-            <Select
-              value={form.category}
-              onValueChange={val => setForm(prev => ({ ...prev, category: val }))}
-            >
+            <Select value={form.category} onValueChange={val => setForm(prev => ({ ...prev, category: val }))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {CATEGORIES.map(cat => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  <SelectItem key={cat} value={cat}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${styles.categoryColors[cat]}`}>{cat}</span>
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -117,22 +89,12 @@ export default function AddExpenseDialog({ tripId, onExpenseAdded }: Props) {
 
           <div className="space-y-1">
             <Label>Notas</Label>
-            <Input
-              name="notes"
-              value={form.notes ?? ''}
-              onChange={e => setForm(prev => ({ ...prev, notes: e.target.value || null }))}
-              placeholder="Ej: Cena en Bangkok"
-            />
+            <Input name="notes" value={form.notes ?? ''} onChange={e => setForm(prev => ({ ...prev, notes: e.target.value || null }))} placeholder="Ej: Cena en Bangkok" />
           </div>
 
           <div className="space-y-1">
             <Label>Fecha</Label>
-            <Input
-              name="date"
-              type="date"
-              value={form.date}
-              onChange={handleChange}
-            />
+            <Input name="date" type="date" value={form.date} onChange={handleChange} />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

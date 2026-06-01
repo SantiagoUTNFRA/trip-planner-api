@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { styles } from '@/lib/styles'
 
 function TripCardSkeleton() {
   return (
@@ -33,7 +34,6 @@ export default function TripList() {
 
   return (
     <div>
-      {/* Hero */}
       <div className="relative rounded-2xl overflow-hidden mb-10 bg-gradient-to-br from-slate-800 to-slate-600 px-8 py-12 text-white">
         <div className="relative z-10">
           <p className="text-slate-300 text-sm font-medium mb-2 uppercase tracking-widest">Trip Planner</p>
@@ -41,36 +41,23 @@ export default function TripList() {
           <p className="text-slate-300 mb-6 max-w-md">
             Registrá tus viajes, controlá gastos por categoría y seguí tu presupuesto en tiempo real.
           </p>
-          <Button
-            onClick={() => navigate('/trips/create')}
-            className="bg-white text-slate-800 hover:bg-slate-100"
-          >
+          <Button onClick={() => navigate('/trips/create')} className="bg-white text-slate-800 hover:bg-slate-100">
             + Nuevo viaje
           </Button>
         </div>
-        {/* Decoración */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 text-8xl opacity-10 select-none">
-          ✈️
-        </div>
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 text-8xl opacity-10 select-none">✈️</div>
       </div>
 
-      {/* Lista */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">
+        <h2 className={`text-lg font-semibold ${styles.textPrimary}`}>
           Mis viajes
-          {!loading && (
-            <span className="ml-2 text-sm font-normal text-slate-400">{trips.length} guardados</span>
-          )}
+          {!loading && <span className={`ml-2 text-sm font-normal ${styles.textMuted}`}>{trips.length} guardados</span>}
         </h2>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {loading ? (
-          <>
-            <TripCardSkeleton />
-            <TripCardSkeleton />
-            <TripCardSkeleton />
-          </>
+          <><TripCardSkeleton /><TripCardSkeleton /><TripCardSkeleton /></>
         ) : trips.length === 0 ? (
           <div className="col-span-3 text-center py-16 text-slate-400">
             <p className="text-4xl mb-3">🗺️</p>
@@ -79,24 +66,14 @@ export default function TripList() {
           </div>
         ) : (
           trips.map(trip => (
-            <Card
-              key={trip.id}
-              className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5"
-              onClick={() => navigate(`/trips/${trip.id}`)}
-            >
+            <Card key={trip.id} className={styles.card} onClick={() => navigate(`/trips/${trip.id}`)}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">{trip.name}</CardTitle>
-                {trip.description && (
-                  <p className="text-sm text-slate-500 line-clamp-2">{trip.description}</p>
-                )}
+                <CardTitle className={`text-base ${styles.textPrimary}`}>{trip.name}</CardTitle>
+                {trip.description && <p className={`text-sm line-clamp-2 ${styles.textSecondary}`}>{trip.description}</p>}
               </CardHeader>
               <CardContent className="flex items-center justify-between pt-0">
-                <span className="text-sm text-slate-400">
-                  📅 {new Date(trip.startDate).toLocaleDateString()}
-                </span>
-                <Badge variant="secondary" className="font-medium">
-                  {trip.totalBudget.toLocaleString()} {trip.baseCurrency}
-                </Badge>
+                <span className={`text-sm ${styles.textMuted}`}>📅 {new Date(trip.startDate).toLocaleDateString()}</span>
+                <Badge variant="secondary" className="font-medium">{trip.totalBudget.toLocaleString()} {trip.baseCurrency}</Badge>
               </CardContent>
             </Card>
           ))
