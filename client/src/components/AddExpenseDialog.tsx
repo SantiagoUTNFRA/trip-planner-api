@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { styles } from '@/lib/styles'
+import { toast } from 'sonner'
 
 const CATEGORIES = Object.keys(styles.categoryColors)
 
@@ -42,9 +43,11 @@ export default function AddExpenseDialog({ tripId, onExpenseAdded }: Props) {
       })
       setOpen(false)
       setForm({ amount: 0, currency: 'NZD', category: 'Food', notes: null, date: new Date().toISOString().split('T')[0], stayId: null })
+      toast.success('Gasto agregado correctamente')
       onExpenseAdded()
     } catch (error) {
       console.error(error)
+      toast.error('Error al agregar el gasto')
     } finally {
       setLoading(false)
     }
